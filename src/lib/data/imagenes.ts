@@ -8,7 +8,7 @@ export const imagenes: Media[] = [
     src: "/galeria/img1.jpg",
     alt: "Montaña reflejada en el lago",
     titulo: "Imagen 1",
-    categoria: "Naturaleza",
+    categoria: "Datos Inmuebles",
     fecha: "2025-08-04"
   },
   {

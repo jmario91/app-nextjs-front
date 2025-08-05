@@ -5,5 +5,6 @@ export interface Media {
   alt: string
   titulo: string
   categoria: string
+  subcategoria?: string
   fecha: string
 }

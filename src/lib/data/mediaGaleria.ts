@@ -6,7 +6,8 @@ export const mediaGaleria: Media[] = [
     src: "/galeria/img1.jpg",
     alt: "Montaña reflejada en el lago",
     titulo: "Imagen 1",
-    categoria: "Naturaleza",
+    categoria: "Datos Inmuebles",
+     subcategoria: "Escritura",
     fecha: "2025-08-04"
   },
   {
@@ -15,7 +16,8 @@ export const mediaGaleria: Media[] = [
     src: "/galeria/img2.jpg",
     alt: "Cascada entre la selva",
     titulo: "Imagen 2",
-    categoria: "Paisaje",
+    categoria: "Documentos Vendedor",
+     subcategoria: "CURP",
     fecha: "2025-08-04"
   },
   {
@@ -24,7 +26,8 @@ export const mediaGaleria: Media[] = [
     src: "/galeria/img3.jpg",
     alt: "Atardecer en la playa",
     titulo: "Imagen 3",
-    categoria: "Playa",
+    categoria: "Documentos Pago de Servicios",
+     subcategoria: "Agua",
     fecha: "2025-08-04"
   },
   {
@@ -33,7 +36,8 @@ export const mediaGaleria: Media[] = [
     src: "/galeria/img4.jpg",
     alt: "Montañas nevadas",
     titulo: "Imagen 4",
-    categoria: "Montañas",
+    categoria: "Documentos Pago de Servicios",
+    subcategoria: "Agua",
     fecha: "2025-08-04"
   },
     {
@@ -42,7 +46,8 @@ export const mediaGaleria: Media[] = [
     src: "/galeria/CasaModerna.mp4",
      alt: "Casa moderna al atardecer",
     titulo: "Video 1",
-    categoria: "Casa Moderna",
+    categoria: "Imágenes del Inmueble",
+    subcategoria: "Interior",
     fecha: "2025-08-05"
   }
   ,
@@ -52,7 +57,8 @@ export const mediaGaleria: Media[] = [
     src: "/galeria/usuarios.pdf",
      alt: "Documento PDF de usuarios",
     titulo: "Usuarios PDF",
-    categoria: "Documentos",
+    categoria:"Documentos Pago de Servicios",
+    subcategoria: "Agua",
     fecha: "2025-08-05"
   }
     ,
@@ -63,6 +69,7 @@ export const mediaGaleria: Media[] = [
      alt: "Documento WORD de ADEUDO",
     titulo: "Formato Adeudo WORD",
     categoria: "Documentos",
+    subcategoria: "Agua",
     fecha: "2025-08-05"
   }
     ,
@@ -73,6 +80,7 @@ export const mediaGaleria: Media[] = [
      alt: "Documento Excel de usuarios",
     titulo: "Solicitud Vacaciones Excel",
     categoria: "Documentos",
+    subcategoria: "Agua",
     fecha: "2025-08-05"
   }
 ]

@@ -1,5 +1,6 @@
  export interface Imagen {
-  id: number
+  id: number,
+  tipo: "imagen" | "video"
   src: string
   alt: string
   titulo: string

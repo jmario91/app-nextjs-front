@@ -1,7 +1,5 @@
- // src/lib/data/imagenes.ts
-//import { Imagen } from "../../types/imagen"
 import { Media } from "../../types/media"
-export const imagenes: Media[] = [
+export const mediaGaleria: Media[] = [
   {
     id: 1,
     tipo: "imagen",

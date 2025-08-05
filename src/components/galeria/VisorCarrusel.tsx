@@ -1,11 +1,12 @@
+// src/components/galeria/VisorCarrusel.tsx
 "use client"
 
 import { useState, useRef } from "react"
 import { Modal, Carousel } from "react-bootstrap"
 import Image from "next/image"
-import { Imagen } from "../../types/imagen" // asegúrate que tu tipo esté aquí
 import styles from "../../styles/components/VisorCarrusel.module.css"
-
+import { Imagen } from "../../types/imagen"
+import { useEffect } from "react"
 interface Props {
   imagenes: Imagen[]
   imagenInicial?: number
@@ -14,10 +15,9 @@ interface Props {
 }
 
 export default function VisorCarrusel({ imagenes, imagenInicial, show, onClose }: Props) {
-  const [index, setIndex] = useState(() => {
-    const startIndex = imagenes.findIndex((img) => img.id === imagenInicial)
-    return startIndex >= 0 ? startIndex : 0
-  })
+const [index, setIndex] = useState(0)
+
+
 
   const visorRef = useRef<HTMLDivElement>(null)
 
@@ -32,73 +32,98 @@ export default function VisorCarrusel({ imagenes, imagenInicial, show, onClose }
   }
 
   const imagenActual = imagenes[index]
-
+const [hovering, setHovering] = useState(false)
+useEffect(() => {
+  if (typeof imagenInicial === 'number') {
+    setIndex(imagenInicial)
+  }
+}, [imagenInicial])
   return (
     <Modal
       show={show}
       onHide={onClose}
       size="xl"
       centered
-      contentClassName="bg-light"
+      contentClassName={styles.modalContent}
       backdrop="static"
     >
-      <Modal.Header className="border-0">
-        <button
-          onClick={onClose}
-          className="btn-close ms-auto"
-          aria-label="Cerrar"
-        />
-      </Modal.Header>
+      <Modal.Body className={`${styles.modalBody}`}>
 
-      <Modal.Body className="p-0">
+        {/* Controles superiores */}
+     <div className={styles.controlsTop}>
+  {/* Botón de cerrar */}
+  <button
+    className="btn btn-sm btn-light border"
+    onClick={onClose}
+    title="Cerrar"
+  >
+    <i className="bi bi-x-lg"></i>
+  </button>
+
+  {/* Descargar */}
+  <a
+    href={imagenActual.src}
+    download
+    target="_blank"
+    rel="noopener noreferrer"
+    className="btn btn-sm btn-light border"
+    title="Descargar"
+  >
+    <i className="bi bi-download"></i>
+  </a>
+
+  {/* Pantalla completa */}
+  <button
+    onClick={handleFullscreen}
+    className="btn btn-sm btn-light border"
+    title="Pantalla completa"
+  >
+    <i className="bi bi-arrows-fullscreen"></i>
+  </button>
+</div>
+
+
         <Carousel
           activeIndex={index}
           onSelect={handleSelect}
           interval={null}
           indicators={false}
+          controls={imagenes.length > 1}
         >
           {imagenes.map((img) => (
             <Carousel.Item key={img.id}>
-              {/* Controles */}
-              <div className={styles.controlesTop}>
-                <a
-                  href={img.src}
-                  download
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn btn-sm btn-light border me-2"
-                  title="Descargar imagen"
-                >
-                  <i className="bi bi-download" />
-                </a>
-                <button
-                  onClick={handleFullscreen}
-                  className="btn btn-sm btn-light border"
-                  title="Pantalla completa"
-                >
-                  <i className="bi bi-arrows-fullscreen" />
-                </button>
+              <div ref={visorRef} className={styles.mediaWrapper}>
+                {img.tipo === "video" ? (
+                  <video
+                    src={img.src}
+                    controls
+                    className={styles.mediaVideo}
+                    onMouseEnter={() => setHovering(true)}
+  onMouseLeave={() => setHovering(false)}
+                  />
+                ) : (
+                  <Image
+                    src={img.src}
+                    alt={img.alt}
+                    width={1200}
+                    height={800}
+                    className={styles.mediaImage}
+                  />
+                )}
               </div>
 
-              {/* Imagen */}
-              <div ref={visorRef} className={styles.visorWrapper}>
-                <Image
-                  src={img.src}
-                  alt={img.alt}
-                  fill
-                  className={styles.imagenCarrusel}
-                />
-              </div>
+              <Carousel.Caption
+  className={styles.caption}
+  style={{
+    opacity: img.tipo === "video" && hovering ? 0 : 1,
+    transition: "opacity 0.3s ease",
+  }}
+>
+  <h5>{img.alt}</h5>
+  {img.categoria && <p>{img.categoria}</p>}
+  {img.fecha && <small>{img.fecha}</small>}
+</Carousel.Caption>
 
-              {/* Título, categoría, fecha */}
-              <Carousel.Caption className="pb-4">
-                <div className="bg-dark bg-opacity-75 text-white px-4 py-3 rounded shadow-sm">
-                  <h5>{img.titulo}</h5>
-                  <small>{img.categoria}</small>
-                  <br />
-                  <small>{img.fecha}</small>
-                </div>
-              </Carousel.Caption>
             </Carousel.Item>
           ))}
         </Carousel>

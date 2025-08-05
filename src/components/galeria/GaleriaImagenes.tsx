@@ -2,17 +2,16 @@
 
 import Image from "next/image"
 import { useState } from "react"
+import { mediaGaleria } from "../../lib/data/mediaGaleria"
 import VisorCarrusel from "./VisorCarrusel"
-import { Imagen } from "../../types/imagen"
-import { imagenes } from "../../lib/data/imagenes"
- 
- 
+
 export default function GaleriaImagenes() {
   const [mostrarCarrusel, setMostrarCarrusel] = useState(false)
-  const [imagenIdActiva, setImagenIdActiva] = useState<number | null>(null)
+  const [mediaIndexActivo, setMediaIndexActivo] = useState<number | null>(null)
 
-  const abrirCarrusel = (id: number) => {
-    setImagenIdActiva(id)
+  const abrirCarrusel = (index: number) => {
+    console.log("Abrir carrusel para el índice:", index)
+    setMediaIndexActivo(index)
     setMostrarCarrusel(true)
   }
 
@@ -20,28 +19,41 @@ export default function GaleriaImagenes() {
     <>
       <div className="container py-4">
         <div className="row justify-content-center">
-          {imagenes.map((img) => (
-            <div className="col-md-3 mb-4" key={img.id}>
+          {mediaGaleria.map((item, index) => (
+            <div className="col-md-3 mb-4" key={item.id}>
               <div
-                className="card h-100 shadow-sm"
+                className="card h-100 shadow-sm position-relative"
                 role="button"
-                onClick={() => abrirCarrusel(img.id)}
+                onClick={() => abrirCarrusel(index)}
               >
-                <Image
-                  src={img.src}
-                  alt={img.alt}
-                  width={300}
-                  height={200}
-                  className="card-img-top"
-                  style={{ objectFit: "cover" }}
-                />
+                {item.tipo === "imagen" ? (
+                  <Image
+                    src={item.src}
+                    alt={item.alt}
+                    width={300}
+                    height={200}
+                    className="card-img-top"
+                    style={{ objectFit: "cover" }}
+                  />
+                ) : (
+                  <video
+                    src={item.src}
+                    className="card-img-top"
+                    style={{ objectFit: "cover", height: 200 }}
+                    muted
+                    loop
+                    autoPlay
+                  />
+                )}
+
+                {item.tipo === "video" && (
+                  <span className="position-absolute top-0 end-0 m-2 badge bg-dark bg-opacity-75">
+                    🎥 Video
+                  </span>
+                )}
+
                 <div className="card-body">
-                  <h5 className="card-title">{img.titulo}</h5>
-                  <p className="card-text">
-                    <strong>Categoría:</strong> {img.categoria} <br />
-                    <strong>Fecha:</strong>{" "}
-                    {new Date(img.fecha).toLocaleDateString()}
-                  </p>
+                  <p className="card-text text-center">{item.alt}</p>
                 </div>
               </div>
             </div>
@@ -50,8 +62,8 @@ export default function GaleriaImagenes() {
       </div>
 
       <VisorCarrusel
-        imagenes={imagenes}
-        imagenInicial={imagenIdActiva ?? 0}
+        imagenes={mediaGaleria}
+        imagenInicial={mediaIndexActivo ?? 0}
         show={mostrarCarrusel}
         onClose={() => setMostrarCarrusel(false)}
       />

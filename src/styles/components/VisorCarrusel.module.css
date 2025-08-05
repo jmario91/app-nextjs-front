@@ -2,9 +2,7 @@
 
 .imagenCarrusel {
   object-fit: contain;
-  max-height: 100%;
-  max-width: 100%;
-  border-radius: 10px;
+  
 }
 
  
@@ -54,9 +52,9 @@
 }
  
 
-.imagenCarrusel {
+/* .imagenCarrusel {
   object-fit: contain;
-}
+} */
 .controlesTop {
   position: absolute;
   top: 1rem;
@@ -75,3 +73,155 @@
   justify-content: center;
   background-color: #f8f9fa;
 }
+.videoCarrusel {
+  width: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+
+.controlesTop {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 2;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.visorWrapper {
+  position: relative;
+  width: 100%;
+  height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f8f9fa;
+}
+
+.imagenCarrusel {
+  object-fit: contain;
+}
+
+.videoCarrusel {
+  width: 100%;
+  max-height: 80vh;
+  border-radius: 0.5rem;
+  background-color: black;
+}
+
+
+.controlesTop {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 2;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.visorWrapper {
+  position: relative;
+  width: 100%;
+  height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #121212;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+}
+
+.imagenCarrusel {
+  object-fit: contain;
+}
+
+.videoCarrusel {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background-color: #000;
+}
+
+.detalles {
+  background-color: rgba(0, 0, 0, 0.75);
+  padding: 1rem 2rem;
+  border-radius: 0.5rem;
+  text-align: center;
+  font-family: "Segoe UI", sans-serif;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+}
+
+/* src/styles/components/VisorCarrusel.module.css */
+.modalContent {
+  background-color: rgba(0, 0, 0, 0.85);
+  border: none;
+  padding: 0;
+}
+
+.modalBody {
+  padding: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.controlsTop {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 1051;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.mediaWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 75vh;
+  padding: 1rem;
+  background-color: #000;
+}
+
+.mediaImage {
+  max-width: 100%;
+  max-height: 80vh;
+  object-fit: contain;
+  border-radius: 0.5rem;
+}
+
+.mediaVideo {
+  max-width: 100%;
+  max-height: 80vh;
+  border-radius: 0.5rem;
+}
+
+.caption {
+  background: rgba(0, 0, 0, 0.6);
+  padding: 1rem;
+  border-radius: 0.5rem;
+  backdrop-filter: blur(4px);
+}
+.controlsTop {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 1051;
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: nowrap;
+}
+.cardInfo {
+  position: absolute;
+  bottom: 6rem; /* estaba en 2rem o 1rem */
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(0, 0, 0, 0.6);
+  padding: 1rem 2rem;
+  border-radius: 0.5rem;
+  text-align: center;
+  color: white;
+  z-index: 1051;
+}
+

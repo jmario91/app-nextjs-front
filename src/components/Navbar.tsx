@@ -1,12 +1,12 @@
-"use client";
+"use client"
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import Link from "next/link"
+import { usePathname } from "next/navigation"
 
 export default function Navbar() {
-  const pathname = usePathname();
+  const pathname = usePathname()
 
-  const isActive = (route: string) => pathname === route;
+  const isActive = (route: string) => pathname === route
 
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
@@ -40,6 +40,7 @@ export default function Navbar() {
                 <i className="bi bi-house-door-fill me-1"></i>Inicio
               </Link>
             </li>
+
             <li className="nav-item">
               <Link
                 className={`nav-link ${isActive("/usuarios") ? "active fw-semibold" : ""}`}
@@ -48,9 +49,18 @@ export default function Navbar() {
                 <i className="bi bi-people-fill me-1"></i>Usuarios
               </Link>
             </li>
+
+            <li className="nav-item">
+              <Link
+                className={`nav-link ${isActive("/galeria") ? "active fw-semibold" : ""}`}
+                href="/galeria"
+              >
+                <i className="bi bi-images me-1"></i>Galería
+              </Link>
+            </li>
           </ul>
         </div>
       </div>
     </nav>
-  );
+  )
 }

@@ -26,31 +26,39 @@ export default function GaleriaImagenes() {
                 role="button"
                 onClick={() => abrirCarrusel(index)}
               >
-                {item.tipo === "imagen" ? (
-                  <Image
-                    src={item.src}
-                    alt={item.alt}
-                    width={300}
-                    height={200}
-                    className="card-img-top"
-                    style={{ objectFit: "cover" }}
-                  />
-                ) : (
-                  <video
-                    src={item.src}
-                    className="card-img-top"
-                    style={{ objectFit: "cover", height: 200 }}
-                    muted
-                    loop
-                    autoPlay
-                  />
-                )}
+           {item.tipo === "imagen" ? (
+  <Image
+    src={item.src}
+    alt={item.alt}
+    width={300}
+    height={200}
+    className="card-img-top"
+    style={{ objectFit: "cover" }}
+  />
+) : item.tipo === "video" ? (
+  <video
+    src={item.src}
+    className="card-img-top"
+    style={{ objectFit: "cover", height: 200 }}
+    muted
+    loop
+    autoPlay
+  />
+) : item.tipo === "pdf" ? (
+  <div className="d-flex justify-content-center align-items-center" style={{ height: 200, background: "#f2f2f2" }}>
+    <i className="bi bi-file-earmark-pdf-fill fs-1 text-danger"></i>
+  </div>
+) : item.tipo === "word" ? (
+  <div className="d-flex justify-content-center align-items-center" style={{ height: 200, background: "#f2f2f2" }}>
+    <i className="bi bi-file-earmark-word-fill fs-1 text-primary"></i>
+  </div>
+) : item.tipo === "excel" ? (
+  <div className="d-flex justify-content-center align-items-center" style={{ height: 200, background: "#f2f2f2" }}>
+    <i className="bi bi-file-earmark-excel-fill fs-1 text-success"></i>
+  </div>
+) : null}
 
-                {item.tipo === "video" && (
-                  <span className="position-absolute top-0 end-0 m-2 badge bg-dark bg-opacity-75">
-                    🎥 Video
-                  </span>
-                )}
+
 
                 <div className="card-body">
                   <p className="card-text text-center">{item.alt}</p>
@@ -62,11 +70,12 @@ export default function GaleriaImagenes() {
       </div>
 
       <VisorCarrusel
-        imagenes={mediaGaleria}
-        imagenInicial={mediaIndexActivo ?? 0}
-        show={mostrarCarrusel}
-        onClose={() => setMostrarCarrusel(false)}
-      />
+  media={mediaGaleria}
+  mediaInicial={mediaIndexActivo ?? 0}
+  show={mostrarCarrusel}
+  onClose={() => setMostrarCarrusel(false)}
+/>
+
     </>
   )
 }

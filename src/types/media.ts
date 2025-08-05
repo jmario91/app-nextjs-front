@@ -1,6 +1,6 @@
 export interface Media {
   id: number
-  tipo: "imagen" | "video"
+  tipo: "imagen" | "video" | "pdf"| "word"| "excel"
   src: string
   alt: string
   titulo: string

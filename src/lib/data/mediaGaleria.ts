@@ -45,4 +45,34 @@ export const mediaGaleria: Media[] = [
     categoria: "Casa Moderna",
     fecha: "2025-08-05"
   }
+  ,
+    {
+    id: 6,
+    tipo: "pdf",
+    src: "/galeria/usuarios.pdf",
+     alt: "Documento PDF de usuarios",
+    titulo: "Usuarios PDF",
+    categoria: "Documentos",
+    fecha: "2025-08-05"
+  }
+    ,
+    {
+    id: 7,
+    tipo: "word",
+    src: "/galeria/FORMATOADEUDOS.docx",
+     alt: "Documento WORD de ADEUDO",
+    titulo: "Formato Adeudo WORD",
+    categoria: "Documentos",
+    fecha: "2025-08-05"
+  }
+    ,
+    {
+    id: 8,
+    tipo: "excel",
+    src: "/galeria/Solicitud de vacaciones Intelisis.xlsx",
+     alt: "Documento Excel de usuarios",
+    titulo: "Solicitud Vacaciones Excel",
+    categoria: "Documentos",
+    fecha: "2025-08-05"
+  }
 ]

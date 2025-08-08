@@ -58,6 +58,15 @@ export default function Navbar() {
                 <i className="bi bi-images me-1"></i>Galería
               </Link>
             </li>
+            <li className="nav-item">
+  <Link
+    className={`nav-link ${isActive("/mapa") ? "active fw-semibold" : ""}`}
+    href="/mapa"
+  >
+    <i className="bi bi-geo-alt-fill me-1"></i>Mapa
+  </Link>
+</li>
+
           </ul>
         </div>
       </div>

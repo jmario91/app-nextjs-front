@@ -1,40 +1,23 @@
-// lib/graphql/usuarios.ts
 import { gql } from '@apollo/client';
 
-export const CREAR_USUARIO = gql`
-  mutation CrearUsuario($input: UsuarioInput!) {
-    crearUsuario(input: $input) {
-      id
-      nombre
-      apellidoPaterno
-      email
+export const OBTENER_USUARIOS_PAGINADO = gql`
+  query ObtenerUsuariosPaginado($pagina: Int!, $limite: Int!, $filtro: FiltroUsuarioInput) {
+    usuariosPaginado(pagina: $pagina, limite: $limite, filtro: $filtro) {
+      total
+      paginas
+      paginaActual
+      usuarios {
+        id
+        nombre
+        apellidoPaterno
+        email
+      }
     }
   }
 `;
 
-export const OBTENER_USUARIOS = gql`
-  query {
-    usuarios {
-      id
-      nombre
-      apellidoPaterno
-      email
-    }
-  }
-`;
-
-
-export const ELIMINAR_USUARIO = gql`
-  mutation EliminarUsuario($id: ID!) {
-    eliminarUsuario(id: $id) {
-      success
-      message
-    }
-  }
-`
-
-   export const OBTENER_USUARIO_POR_ID = gql`
-  query ObtenerUsuarioPorId($id: ID!) {
+export const OBTENER_USUARIO_POR_ID = gql`
+  query ObtenerUsuarioPorId($id: String!) {
     usuario(id: $id) {
       id
       nombre
@@ -61,8 +44,19 @@ export const ELIMINAR_USUARIO = gql`
     }
   }
 `;
+
+export const CREAR_USUARIO = gql`
+  mutation CrearUsuario($input: CreateUsuarioInput!) {
+    crearUsuario(input: $input) {
+      id
+      nombre
+      email
+    }
+  }
+`;
+
 export const ACTUALIZAR_USUARIO = gql`
-  mutation ActualizarUsuario($id: ID!, $input: UsuarioInput!) {
+  mutation ActualizarUsuario($id: String!, $input: UpdateUsuarioInput!) {
     actualizarUsuario(id: $id, input: $input) {
       id
       nombre
@@ -71,19 +65,8 @@ export const ACTUALIZAR_USUARIO = gql`
   }
 `;
 
-
-export const OBTENER_USUARIOS_PAGINADO = gql`
-  query ObtenerUsuariosPaginado($pagina: Int, $limite: Int, $filtro: UsuarioFiltroInput) {
-    usuariosPaginado(pagina: $pagina, limite: $limite, filtro: $filtro) {
-      total
-      paginas
-      paginaActual
-      usuarios {
-        id
-        nombre
-        apellidoPaterno
-        email
-      }
-    }
+export const ELIMINAR_USUARIO = gql`
+  mutation EliminarUsuario($id: String!) {
+    eliminarUsuario(id: $id)
   }
 `;

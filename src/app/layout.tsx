@@ -1,8 +1,8 @@
 import 'bootstrap/dist/css/bootstrap.min.css'
-import './globals.css'
 import { ReactNode } from 'react'
 import Navbar from '../components/Navbar'
 import ApolloWrapper from '../lib/apollo-provider'
+import "../styles/global.css"
 
 export const metadata = {
   title: 'Aplicación Mario Perez Nextjs',

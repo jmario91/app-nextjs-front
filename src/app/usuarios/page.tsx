@@ -10,21 +10,31 @@ import client from "../../lib/apollo-client";
 export default function UsuariosPage() {
   const [pagina, setPagina] = useState(1);
   const [limite] = useState(5);
-  const [filtro, setFiltro] = useState({ nombre: "", email: "" });
-  const [search, setSearch] = useState("");
+  const [filtro, setFiltro] = useState<{ nombre?: string; email?: string }>({});
+const [search, setSearch] = useState("");
 
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      setFiltro({ nombre: search, email: search });
-      setPagina(1);
-    }, 400);
-    return () => clearTimeout(timeout);
-  }, [search]);
+ useEffect(() => {
+  const t = setTimeout(() => {
+    const valor = search.trim();
+    if (valor === "") {
+      setFiltro({});
+    } else {
+      setFiltro({ nombre: valor, email: valor });
+    }
+    setPagina(1);
+  }, 400);
+  return () => clearTimeout(t);
+}, [search]);
 
-  const { data, loading, error } = useQuery(OBTENER_USUARIOS_PAGINADO, {
-    variables: { pagina, limite, filtro },
-    client,
-  });
+
+ const { data, loading, error } = useQuery(OBTENER_USUARIOS_PAGINADO, {
+  variables: {
+    pagina,
+    limite,
+    filtro: Object.keys(filtro).length > 0 ? filtro : null, // <- clave
+  },
+  client,
+});
 
   const usuarios = data?.usuariosPaginado?.usuarios || [];
   const totalPaginas = data?.usuariosPaginado?.paginas || 1;
@@ -74,7 +84,13 @@ export default function UsuariosPage() {
                       >
                         ✏️ Editar
                       </Link>
-                      <DeleteButton id={u.id} />
+                     <DeleteButton
+  id={u.id}
+  pagina={pagina}
+  limite={limite}
+  filtro={Object.keys(filtro).length > 0 ? filtro : undefined}
+/>
+
                     </td>
                   </tr>
                 ))}

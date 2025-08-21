@@ -5,9 +5,9 @@ export interface Usuario {
   apellidoMaterno?: string;
   sexo: string;
   fechaNacimiento?: string;
-  edad: number;
-  talla: number;
-  peso: number;
+  edad: number|null;
+  talla: number|null;
+  peso: number|null;
   email: string;
   aceptaTerminos?: boolean;
   estatus?: string;

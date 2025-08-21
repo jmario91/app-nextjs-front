@@ -1,44 +1,328 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { MapaData } from "lib/data/mapaDatos"
-import { Mapa } from "../../types/mapa"
-import dynamic from "next/dynamic"
+import Image from "next/image";
+import { useEffect, useMemo, useRef, useState } from "react";
+import s from "../../styles/components/mapa.module.css";
+import type { Mapa } from "../../types/mapa";
+import { MapaData } from "../../lib/data/mapaDatos";
+import MapaProyecto from "../../components/mapa/MapaProyecto";
 
-const MapaProyecto = dynamic(() => import('../../components/mapa/MapaProyecto'), {
-  ssr: false,
-})
+const norm = (v?: string | null) =>
+  (v ?? "")
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "")
+    .toLowerCase();
 
-export default function PaginaMapa() {
-  const [marcadorActivo, setMarcadorActivo] = useState<Mapa | null>(null)
-  console.log("MapaData:", MapaData)
+type SortKey = "relevance" | "precio_asc" | "precio_desc" | "nombre_asc";
+
+export default function PageMapa() {
+  const [texto, setTexto] = useState("");
+  const [estadoSel, setEstadoSel] = useState<string>(""); // "" = Todos
+  const [ciudadSel, setCiudadSel] = useState<string>(""); // "" = Todos
+  const [sortKey, setSortKey] = useState<SortKey>("relevance");
+
+  const PAGE_SIZE = 5;
+  const [page, setPage] = useState(1);
+
+  const [focusId, setFocusId] = useState<string | null>(null);
+  const [overlay, setOverlay] = useState({
+    show: false,
+    theme: "dark" as "dark" | "light",
+    message: "",
+  });
+
+ 
+  const cardRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const setCardRef = (id: string) => (el: HTMLDivElement | null) => {
+    cardRefs.current[id] = el;
+  };
+
+
+  const opcionesEstado = useMemo(() => {
+    const set = new Set<string>();
+    MapaData.forEach((u) => u.estado && set.add(u.estado));
+    return Array.from(set).sort((a, b) => a.localeCompare(b, "es"));
+  }, []);
+
+   const opcionesCiudad = useMemo(() => {
+    const base = estadoSel ? MapaData.filter((u) => u.estado === estadoSel) : MapaData;
+    const set = new Set<string>();
+    base.forEach((u) => u.ciudad && set.add(u.ciudad));
+    return Array.from(set).sort((a, b) => a.localeCompare(b, "es"));
+  }, [estadoSel]);
+
+
+  const filtrados: Mapa[] = useMemo(() => {
+    const t = norm(texto);
+    return MapaData.filter((u) => {
+      if (t) {
+        const hayTexto = norm(u.nombre + " " + (u.colonia ?? "")).includes(t);
+        if (!hayTexto) return false;
+      }
+      if (estadoSel && u.estado !== estadoSel) return false;
+      if (ciudadSel && u.ciudad !== ciudadSel) return false;
+      return true;
+    });
+  }, [texto, estadoSel, ciudadSel]);
+
+
+  const ordenados: Mapa[] = useMemo(() => {
+    const arr = [...filtrados];
+    switch (sortKey) {
+      case "precio_asc":
+        return arr.sort((a, b) => (a.precio ?? Infinity) - (b.precio ?? Infinity));
+      case "precio_desc":
+        return arr.sort((a, b) => (b.precio ?? -Infinity) - (a.precio ?? -Infinity));
+      case "nombre_asc":
+        return arr.sort((a, b) => a.nombre.localeCompare(b.nombre, "es"));
+      default:
+        return arr; // relevance (sin cambio)
+    }
+  }, [filtrados, sortKey]);
+
+  /** 3) Paginados */
+  const totalPages = Math.max(1, Math.ceil(ordenados.length / PAGE_SIZE));
+  const pageStart = (page - 1) * PAGE_SIZE;
+  const pageItems = ordenados.slice(pageStart, pageStart + PAGE_SIZE);
+
+  /** overlay y contadores */
+  const hasResults = ordenados.length > 0;
+
+  // Resetear página cuando cambian filtros/orden/búsqueda
+  useEffect(() => {
+    setPage(1);
+  }, [texto, estadoSel, ciudadSel, sortKey]);
+
+  // Resetear ciudad cuando cambia estado
+  useEffect(() => {
+    setCiudadSel("");
+  }, [estadoSel]);
+
+  // Si no hay resultados, limpiamos selección
+  useEffect(() => {
+    if (!hasResults) setFocusId(null);
+  }, [hasResults]);
+
+  /** Handlers */
+  const handleCardClick = (u: Mapa) => {
+    const ok = u.latitud != null && u.longitud != null;
+    if (ok) {
+      setFocusId(u.id);
+      setOverlay((o) => ({ ...o, show: false }));
+    } else {
+      setOverlay({
+        show: true,
+        theme: "dark",
+        message: `“${u.nombre}” no cuenta con una dirección válida o coordenadas registradas.`,
+      });
+    }
+  };
+
+  const handleMarkerClick = (u: Mapa) => {
+    // Si el puntero pertenece a otra página, saltamos a esa página
+    const idx = ordenados.findIndex((x) => x.id === u.id);
+    if (idx >= 0) {
+      const targetPage = Math.floor(idx / PAGE_SIZE) + 1;
+      if (targetPage !== page) setPage(targetPage);
+    }
+
+    setFocusId(u.id);
+    setOverlay((o) => ({ ...o, show: false }));
+
+    // Hacer scroll a la card
+    setTimeout(() => {
+      const el = cardRefs.current[u.id];
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+        el.classList.add(s.cardFlash);
+        setTimeout(() => el.classList.remove(s.cardFlash), 1200);
+      }
+    }, 0);
+  };
+
+  const clearFilters = () => {
+    setTexto("");
+    setEstadoSel("");
+    setCiudadSel("");
+    setSortKey("relevance");
+    setPage(1);
+    setFocusId(null);
+  };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 min-h-screen bg-light">
-  {/* Listado */}
-  <div className="space-y-4">
-    {MapaData.map((p) => (
-      <div
-        key={p.id}
-        className="bg-white shadow-md p-4 rounded cursor-pointer hover:bg-gray-100 transition"
-        onClick={() => setMarcadorActivo(p)}
-      >
-        <h3 className="font-semibold">{p.nombre}</h3>
-        <p>{p.colonia}, {p.ciudad}</p>
-        <p className="text-success">
-          ${p.precio.toLocaleString("es-MX")}
-        </p>
-      </div>
-    ))}
-  </div>
+    <div className={s.mapLayout}>
+     
+      <header className={s.filtersBar}>
+        <div className={s.listHeader}>
+          <input
+            className="form-control"
+            placeholder="Buscar por nombre o colonia"
+            value={texto}
+            onChange={(e) => setTexto(e.target.value)}
+            style={{ maxWidth: 280 }}
+            aria-label="Buscar por nombre o colonia"
+          />
 
- {/* Mapa */}
-<div className="bg-white shadow-md rounded overflow-hidden h-[600px] col-span-1 md:col-span-1">
-  <h3 className="font-semibold p-2 border-b">MAPA</h3>
-  <MapaProyecto mapas={MapaData} marcadorActivo={marcadorActivo} />
-</div>
+          <select
+            className="form-select"
+            style={{ maxWidth: 220 }}
+            value={estadoSel}
+            onChange={(e) => setEstadoSel(e.target.value)}
+            aria-label="Filtrar por estado"
+          >
+            <option value="">Todos los estados</option>
+            {opcionesEstado.map((est) => (
+              <option key={est} value={est}>{est}</option>
+            ))}
+          </select>
 
-</div>
+          <select
+            className="form-select"
+            style={{ maxWidth: 260 }}
+            value={ciudadSel}
+            onChange={(e) => setCiudadSel(e.target.value)}
+            aria-label="Filtrar por alcaldía o municipio"
+            disabled={!opcionesCiudad.length}
+          >
+            <option value="">Todas las alcaldías/municipios</option>
+            {opcionesCiudad.map((c) => (
+              <option key={c} value={c}>{c}</option>
+            ))}
+          </select>
 
-  )
+     
+          <select
+            className="form-select"
+            style={{ maxWidth: 180 }}
+            value={sortKey}
+            onChange={(e) => setSortKey(e.target.value as SortKey)}
+            aria-label="Ordenar resultados"
+          >
+            <option value="relevance">Recomendado</option>
+            <option value="precio_asc">Precio: menor a mayor</option>
+            <option value="precio_desc">Precio: mayor a menor</option>
+            <option value="nombre_asc">Nombre A–Z</option>
+          </select>
+
+          <button className={s.filterBtn} onClick={clearFilters}>
+            Limpiar filtros
+          </button>
+
+          <span className={s.resultsBadge} aria-live="polite">
+            {hasResults
+              ? `${ordenados.length} resultado${ordenados.length === 1 ? "" : "s"}`
+              : "Sin resultados"}
+          </span>
+        </div>
+      </header>
+
+  
+      <aside className={s.listPanel}>
+        <div className={s.listBody}>
+          {!hasResults ? (
+            <div style={{ padding: 24, color: "#6b7280" }}>
+              <div className="h6 mb-1">Sin resultados</div>
+              <div>Intenta cambiar el estado, alcaldía/municipio o tu búsqueda.</div>
+            </div>
+          ) : (
+            <>
+              {pageItems.map((u) => (
+                <article
+                  key={u.id}
+                  ref={setCardRef(u.id)}
+                  className={[
+                    s.cardItem,
+                    (u.latitud == null || u.longitud == null) ? s.cardDisabled : "",
+                    focusId === u.id ? s.cardItemActive : "",
+                  ].join(" ")}
+                  onClick={() => handleCardClick(u)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && handleCardClick(u)}
+                  aria-label={`Seleccionar ${u.nombre}`}
+                >
+                  <div>
+                    <Image
+                      src={u.thumb || "/galeria/img1.jpg"}
+                      alt={u.nombre}
+                      width={120}
+                      height={120}
+                      className={s.cardThumb}
+                    />
+                  </div>
+                  <div>
+                    <div className={s.cardTitle}>{u.nombre}</div>
+                    <div className={s.cardMeta}>
+                      {u.colonia ? `${u.colonia} · ` : ""}{u.ciudad}, {u.estado}
+                    </div>
+                  </div>
+                </article>
+              ))}
+
+            
+              <div className={s.pager}>
+                <button
+                  className="btn btn-light btn-sm"
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  disabled={page <= 1}
+                  aria-label="Página anterior"
+                >
+                  ← Anterior
+                </button>
+                <span style={{ padding: "0 8px" }}>
+                  Página {page} de {totalPages}
+                </span>
+                <button
+                  className="btn btn-light btn-sm"
+                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                  disabled={page >= totalPages}
+                  aria-label="Página siguiente"
+                >
+                  Siguiente →
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+      </aside>
+
+ 
+      <section className={s.mapWrapper}>
+        {!hasResults ? (
+          <div className={`${s.mapOverlay} ${s.overlayLight}`} style={{ position: "relative", minHeight: 280 }}>
+            <div className={s.overlayCard}>
+              <h3 className="h5 mb-2">No hay registros</h3>
+              <p className="mb-0">Ajusta los filtros o cambia el término de búsqueda.</p>
+            </div>
+          </div>
+        ) : (
+          <>
+            {overlay.show && (
+              <div className={`${s.mapOverlay} ${overlay.theme === "dark" ? s.overlayDark : s.overlayLight}`}>
+                <div className={s.overlayCard}>
+                  <h3 className="h5 mb-2">Ubicación no disponible</h3>
+                  <p className="mb-2">{overlay.message}</p>
+                  <button
+                    className="btn btn-primary btn-sm"
+                    onClick={() => setOverlay((o) => ({ ...o, show: false }))}
+                  >
+                    Entendido
+                  </button>
+                </div>
+              </div>
+            )}
+
+            <div className={s.stickyMap}>
+              <MapaProyecto
+                className={s.mapCanvas}
+                items={pageItems}
+                focusId={focusId}
+                onMarkerClick={handleMarkerClick}
+              />
+            </div>
+          </>
+        )}
+      </section>
+    </div>
+  );
 }

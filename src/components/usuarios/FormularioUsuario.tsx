@@ -141,14 +141,14 @@ function mapUsuarioToForm(u: Usuario): FormUsuario {
 
  function mapFormToUsuario(form: FormUsuario): Usuario {
   return {
-    nombre: form.nombre.trim(),
+     nombre: form.nombre.trim(),
     apellidoPaterno: form.apellidoPaterno.trim(),
     apellidoMaterno: form.apellidoMaterno.trim(),
     sexo: form.sexo,
     fechaNacimiento: toIsoDateOrUndefined(form.fechaNacimiento) as string,
-    edad: form.edad !== "" ? Number(form.edad) : 0,
-    talla: form.talla !== "" ? Number(form.talla) : 0,
-    peso: form.peso !== "" ? Number(form.peso) : 0,
+    edad: form.edad !== "" ? Number(form.edad) : 0,   // ✅ Int
+    talla: form.talla !== "" ? parseFloat(form.talla) : null,  // ✅ Float
+    peso: form.peso !== "" ? parseFloat(form.peso) : null,     // ✅ Float
     email: form.email.trim(),
     aceptaTerminos: !!form.aceptaTerminos,
     ocupacion: form.ocupacion,
@@ -220,13 +220,17 @@ const handleSubmit = async (e: FormEvent) => {
       });
     } else {
       // Modo creación
-      await crearUsuario({
+      await crearUsuario(
+        
+        {
+          
         variables: {
+          
           input: payload
         }
       });
     }
-
+console.log("Payload enviado:", payload)
     // Redirige al tablero de usuarios
     router.push("/usuarios");
 

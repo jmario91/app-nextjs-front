@@ -46,7 +46,7 @@ export const OBTENER_USUARIO_POR_ID = gql`
 `;
 
 export const CREAR_USUARIO = gql`
-  mutation CrearUsuario($input: CreateUsuarioInput!) {
+  mutation CrearUsuario($input: CrearUsuarioInput!) {
     crearUsuario(input: $input) {
       id
       nombre

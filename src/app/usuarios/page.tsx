@@ -31,7 +31,7 @@ const [search, setSearch] = useState("");
   variables: {
     pagina,
     limite,
-    filtro: Object.keys(filtro).length > 0 ? filtro : null, // <- clave
+    filtro: Object.keys(filtro).length > 0 ? filtro : null,  
   },
   client,
 });

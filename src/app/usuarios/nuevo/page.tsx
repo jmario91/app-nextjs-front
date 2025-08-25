@@ -9,8 +9,7 @@ import { Usuario } from "../../../types/usuario";
 
 export default function NuevoUsuarioPage() {
   const router = useRouter();
-
-  // Si tu lista usa otras variables (página actual, límite, filtro), ponlas iguales aquí
+ 
   const [crearUsuario, { loading }] = useMutation(CREAR_USUARIO, {
     refetchQueries: [
       {
@@ -22,8 +21,7 @@ export default function NuevoUsuarioPage() {
 
   const handleCrear = async (usuario: Usuario) => {
     try {
-      // Mapea tus campos al input del backend (CreateUsuarioInput)
-      const input = {
+        const input = {
         nombre: usuario.nombre,
         apellidoPaterno: usuario.apellidoPaterno,
         apellidoMaterno: usuario.apellidoMaterno ?? null,

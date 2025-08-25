@@ -20,9 +20,9 @@ export default function PageMapa() {
   const [estadoSel, setEstadoSel] = useState<string>(""); // "" = Todos
   const [ciudadSel, setCiudadSel] = useState<string>(""); // "" = Todos
   const [sortKey, setSortKey] = useState<SortKey>("relevance");
-
-  const PAGE_SIZE = 5;
+   const PAGE_SIZE = 5;
   const [page, setPage] = useState(1);
+const [selectedUser, setSelectedUser] = useState<{ nombre: string } | null>(null);
 
   const [focusId, setFocusId] = useState<string | null>(null);
   const [overlay, setOverlay] = useState({
@@ -31,7 +31,24 @@ export default function PageMapa() {
     message: "",
   });
 
+  const [showLocationError, setShowLocationError] = useState(false);
+const [userWithoutCoords, setUserWithoutCoords] = useState<string | null>(null);
+
+const handleUserSelect = (user: Mapa) => {
+  if (!user.latitud || !user.longitud) {
+    setUserWithoutCoords(user.nombre);  
+    setShowLocationError(true);        
+    return;
+  }
+
  
+  setShowLocationError(false);
+  setUserWithoutCoords(null);
+
+   
+  setFocusId(user.id);
+};
+
   const cardRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const setCardRef = (id: string) => (el: HTMLDivElement | null) => {
     cardRefs.current[id] = el;
@@ -76,34 +93,30 @@ export default function PageMapa() {
       case "nombre_asc":
         return arr.sort((a, b) => a.nombre.localeCompare(b.nombre, "es"));
       default:
-        return arr; // relevance (sin cambio)
+        return arr;  
     }
   }, [filtrados, sortKey]);
-
-  /** 3) Paginados */
+ 
   const totalPages = Math.max(1, Math.ceil(ordenados.length / PAGE_SIZE));
   const pageStart = (page - 1) * PAGE_SIZE;
   const pageItems = ordenados.slice(pageStart, pageStart + PAGE_SIZE);
-
-  /** overlay y contadores */
   const hasResults = ordenados.length > 0;
-
-  // Resetear página cuando cambian filtros/orden/búsqueda
+ 
   useEffect(() => {
     setPage(1);
   }, [texto, estadoSel, ciudadSel, sortKey]);
 
-  // Resetear ciudad cuando cambia estado
+  
   useEffect(() => {
     setCiudadSel("");
   }, [estadoSel]);
 
-  // Si no hay resultados, limpiamos selección
+  
   useEffect(() => {
     if (!hasResults) setFocusId(null);
   }, [hasResults]);
 
-  /** Handlers */
+ 
   const handleCardClick = (u: Mapa) => {
     const ok = u.latitud != null && u.longitud != null;
     if (ok) {
@@ -119,8 +132,7 @@ export default function PageMapa() {
   };
 
   const handleMarkerClick = (u: Mapa) => {
-    // Si el puntero pertenece a otra página, saltamos a esa página
-    const idx = ordenados.findIndex((x) => x.id === u.id);
+   const idx = ordenados.findIndex((x) => x.id === u.id);
     if (idx >= 0) {
       const targetPage = Math.floor(idx / PAGE_SIZE) + 1;
       if (targetPage !== page) setPage(targetPage);
@@ -289,28 +301,31 @@ export default function PageMapa() {
  
       <section className={s.mapWrapper}>
         {!hasResults ? (
-          <div className={`${s.mapOverlay} ${s.overlayLight}`} style={{ position: "relative", minHeight: 280 }}>
-            <div className={s.overlayCard}>
-              <h3 className="h5 mb-2">No hay registros</h3>
-              <p className="mb-0">Ajusta los filtros o cambia el término de búsqueda.</p>
-            </div>
-          </div>
+           <div className={`${s.mapOverlay} ${s.overlayLight}`} style={{ position: "relative", minHeight: 280 }}>
+      <div className={s.overlayCard}>
+        <span className={s.noResultsIcon}>🔍</span>
+        <h3 className={s.noResultsTitle}>No hay registros</h3>
+        <p className={s.noResultsText}>
+          Ajusta los filtros o cambia el término de búsqueda.
+        </p>
+        <button className={s.retryButton} onClick={clearFilters}>
+          Quitar filtros
+        </button>
+      </div>
+    </div>
         ) : (
           <>
-            {overlay.show && (
-              <div className={`${s.mapOverlay} ${overlay.theme === "dark" ? s.overlayDark : s.overlayLight}`}>
-                <div className={s.overlayCard}>
-                  <h3 className="h5 mb-2">Ubicación no disponible</h3>
-                  <p className="mb-2">{overlay.message}</p>
-                  <button
-                    className="btn btn-primary btn-sm"
-                    onClick={() => setOverlay((o) => ({ ...o, show: false }))}
-                  >
-                    Entendido
-                  </button>
-                </div>
-              </div>
-            )}
+         {showLocationError && (
+  <div className={s.overlayFull}>
+    <div className={s.overlayContent}>
+      <h3>Ubicación no disponible</h3>
+      <p>
+        “{userWithoutCoords}” no cuenta con una dirección válida o coordenadas registradas.
+      </p>
+      <button onClick={() => setShowLocationError(false)}>Entendido</button>
+    </div>
+  </div>
+)}
 
             <div className={s.stickyMap}>
               <MapaProyecto

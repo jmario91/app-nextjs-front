@@ -3,6 +3,7 @@ import { ReactNode } from 'react'
 import Navbar from '../components/Navbar'
 import ApolloWrapper from '../lib/apollo-provider'
 import "../styles/global.css"
+import { AuthProvider } from "../context/AuthContext";
 
 export const metadata = {
   title: 'Aplicación Mario Perez Nextjs',
@@ -20,13 +21,16 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       </head>
       <body className="bg-light d-flex flex-column min-vh-100">
         <ApolloWrapper>
-          <Navbar />
+          <AuthProvider>
+<Navbar />
           <main className="container py-4 flex-grow-1">
             {children}
           </main>
           <footer className="bg-dark text-white text-center py-3">
             <small>© {new Date().getFullYear()} App Mario · Todos los derechos reservados</small>
           </footer>
+          </AuthProvider>
+          
         </ApolloWrapper>
       </body>
     </html>

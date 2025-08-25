@@ -7,7 +7,9 @@ import { useMutation } from '@apollo/client'
 import client from '../../lib/apollo-client'
 import { CREAR_USUARIO, ACTUALIZAR_USUARIO } from '../../lib/graphql/usuarios'
 import { useRouter } from "next/navigation"
-
+//Formulario Detalle-Beneficiarios
+import BeneficiariosForm from "./BeneficiariosForm";
+import { Beneficiario } from "../../types/beneficiario";
 
 const CATALOGOS = {
   SEXOS: [
@@ -146,9 +148,9 @@ function mapUsuarioToForm(u: Usuario): FormUsuario {
     apellidoMaterno: form.apellidoMaterno.trim(),
     sexo: form.sexo,
     fechaNacimiento: toIsoDateOrUndefined(form.fechaNacimiento) as string,
-    edad: form.edad !== "" ? Number(form.edad) : 0,   // ✅ Int
-    talla: form.talla !== "" ? parseFloat(form.talla) : null,  // ✅ Float
-    peso: form.peso !== "" ? parseFloat(form.peso) : null,     // ✅ Float
+    edad: form.edad !== "" ? Number(form.edad) : 0,  
+    talla: form.talla !== "" ? parseFloat(form.talla) : null,  
+    peso: form.peso !== "" ? parseFloat(form.peso) : null,     
     email: form.email.trim(),
     aceptaTerminos: !!form.aceptaTerminos,
     ocupacion: form.ocupacion,
@@ -180,9 +182,15 @@ const [actualizarUsuario, actualizarEstado] = useMutation(ACTUALIZAR_USUARIO, {
 
 const loading = crearEstado.loading || actualizarEstado.loading;
 const error = crearEstado.error || actualizarEstado.error;
-  useEffect(() => {
+ //Detalle-Beneficiarios
+const [beneficiarios, setBeneficiarios] = useState<Beneficiario[]>(usuario?.beneficiarios ?? []);
+
+useEffect(() => {
     console.log("Precargando usuario:", usuario)
-    if (usuario) setForm(mapUsuarioToForm(usuario))
+    if (usuario) 
+     setForm( mapUsuarioToForm(usuario));
+      setBeneficiarios(usuario?.beneficiarios ?? []);
+    
   }, [usuario])
 
   const isEdit = useMemo(() => !!usuario, [usuario])
@@ -205,45 +213,50 @@ const error = crearEstado.error || actualizarEstado.error;
 
     setForm((f) => ({ ...f, [name]: value } as FormUsuario))
   }
-const handleSubmit = async (e: FormEvent) => {
+ const handleSubmit = async (e: FormEvent) => {
   e.preventDefault();
-  const payload = mapFormToUsuario(form);
 
+  const usuarioBase = mapFormToUsuario(form);
+
+  const cleanBeneficiarios = beneficiarios
+  .filter(b => b.nombre.trim() !== "")
+  .map((b) => {
+    const { __typename, ...rest } = b as any; // 👈 forzamos el cast
+    return rest;
+  });
+const payload = {
+  ...usuarioBase,
+  beneficiarios: cleanBeneficiarios,
+};
+  // const payload = {
+  //   ...usuarioBase,
+  // beneficiarios: beneficiarios.filter(b => b.nombre.trim() !== ""),
+  // };
+  
   try {
     if (usuario?.id) {
       // Modo edición
       await actualizarUsuario({
-        variables: {
-          id: usuario.id,
-          input: payload
-        }
+        variables: { id: usuario.id, input: payload }
       });
     } else {
       // Modo creación
-      await crearUsuario(
-        
-        {
-          
-        variables: {
-          
-          input: payload
-        }
-      });
+      await crearUsuario({ variables: { input: payload } });
     }
-console.log("Payload enviado:", payload)
-    // Redirige al tablero de usuarios
-    router.push("/usuarios");
 
+    console.log("✅ Payload enviado:", payload);
+    router.push("/usuarios");
   } catch (err: any) {
     console.error("Error al guardar usuario:", err);
-    alert("❌ Error al guardar usuario");
+    alert("Error al guardar usuario");
   }
 };
 
 
+
 return (
   <form className="container mt-4" onSubmit={handleSubmit}>
-    {/* 🧍 Datos personales */}
+    {/*Datos personales */}
     <div className="card mb-4 shadow-sm">
       <div className="card-header bg-primary text-white">
         🧍 Datos personales
@@ -289,7 +302,7 @@ return (
       </div>
     </div>
 
-    {/* 📞 Contacto */}
+    {/* Contacto */}
     <div className="card mb-4 shadow-sm">
       <div className="card-header bg-secondary text-white">
         📞 Contacto
@@ -306,7 +319,7 @@ return (
       </div>
     </div>
 
-    {/* 💼 Perfil profesional */}
+    {/*Perfil profesional */}
     <div className="card mb-4 shadow-sm">
       <div className="card-header bg-info text-white">
         💼 Perfil profesional
@@ -363,7 +376,7 @@ return (
       </div>
     </div>
 
-    {/* 🏠 Dirección */}
+    {/* Dirección */}
     <div className="card mb-4 shadow-sm">
       <div className="card-header bg-dark text-white">
         🏠 Dirección
@@ -387,8 +400,12 @@ return (
         </div>
       </div>
     </div>
+{/* Detalle-Beneficiarios */}
+<BeneficiariosForm beneficiarios={beneficiarios} setBeneficiarios={setBeneficiarios} />
 
-    {/* ✅ Estatus y botón */}
+
+
+    {/* Estatus y botón */}
     <div className="card shadow-sm">
       <div className="card-header bg-success text-white">
         ✅ Estatus
@@ -421,7 +438,7 @@ return (
           </button>
           {error && (
             <div className="alert alert-danger mt-3 mb-0" role="alert">
-              ⚠️ Error: {error.message}
+               Error: {error.message}
             </div>
           )}
         </div>

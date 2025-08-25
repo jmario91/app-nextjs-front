@@ -15,7 +15,39 @@ export const OBTENER_USUARIOS_PAGINADO = gql`
     }
   }
 `;
-
+export const OBTENER_USUARIO = gql`
+  query ObtenerUsuario($id: String!) {  
+    usuario(id: $id) {
+      id
+      nombre
+      email
+      apellidoPaterno
+      apellidoMaterno
+      sexo
+      fechaNacimiento
+      edad
+      talla
+      peso
+      aceptaTerminos
+      ocupacion
+      estadoCivil
+      nivelEducativo
+      idioma
+      hobbies
+      notasAdicionales
+      estatus
+      entidad
+      municipio
+      colonia
+      codigoPostal
+      beneficiarios {
+        id
+        idDetalle
+        nombre
+      }
+    }
+  }
+`;
 export const OBTENER_USUARIO_POR_ID = gql`
   query ObtenerUsuarioPorId($id: String!) {
     usuario(id: $id) {
@@ -51,6 +83,11 @@ export const CREAR_USUARIO = gql`
       id
       nombre
       email
+      beneficiarios {
+        id
+        idDetalle
+        nombre
+      }
     }
   }
 `;
@@ -61,6 +98,11 @@ export const ACTUALIZAR_USUARIO = gql`
       id
       nombre
       email
+      beneficiarios {
+        id
+        idDetalle
+        nombre
+      }
     }
   }
 `;

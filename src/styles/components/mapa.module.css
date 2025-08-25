@@ -652,53 +652,24 @@
 :global(.airCard__price) { font-weight: 800; white-space: nowrap; }
 :global(.airCard__subtitle) { color: #6b7280; font-size: .88rem; margin-top: 4px; }
 
-.overlayCard {
+.overlayFull {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.95);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 5000; /* asegúrate que cubra el mapa */
+}
+
+.overlayContent {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
   text-align: center;
-  background: #fff;
-  border-radius: 16px;
-  padding: 32px 24px;
-  box-shadow: 0px 6px 18px rgba(0, 0, 0, 0.1);
   max-width: 400px;
-  margin: 0 auto;
-  animation: fadeIn 0.3s ease-in-out;
-}
-
-.noResultsIcon {
-  font-size: 48px;
-  display: block;
-  margin-bottom: 16px;
-  opacity: 0.8;
-}
-
-.noResultsTitle {
-  font-size: 1.4rem;
-  font-weight: 600;
-  margin-bottom: 8px;
-  color: #333;
-}
-
-.noResultsText {
-  font-size: 1rem;
-  color: #666;
-  margin-bottom: 20px;
-}
-
-.retryButton {
-  background: #007bff;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  padding: 10px 20px;
-  font-size: 0.95rem;
-  cursor: pointer;
-  transition: background 0.3s;
-}
-
-.retryButton:hover {
-  background: #0056b3;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
 }

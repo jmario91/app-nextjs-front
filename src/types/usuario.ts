@@ -1,3 +1,5 @@
+import { Beneficiario } from "./beneficiario";
+
 export interface Usuario {
   id?: string;
   nombre: string;
@@ -23,4 +25,7 @@ export interface Usuario {
   notasAdicionales?: string;
   createdAt?: string;
   updatedAt?: string;
+
+  beneficiarios?: Beneficiario[];
+
 }

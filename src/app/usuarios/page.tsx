@@ -41,7 +41,7 @@ const [search, setSearch] = useState("");
 
   if (loading) return <p className="container mt-4">Cargando usuarios...</p>;
   if (error) return <p className="container mt-4 text-danger">Error: {error.message}</p>;
-console.log(filtro);
+
   return (
     <div className="container mt-4">
       <div className="card shadow-sm">

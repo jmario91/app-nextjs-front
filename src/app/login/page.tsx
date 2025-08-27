@@ -1,20 +1,28 @@
 "use client";
 
 import { useMutation } from "@apollo/client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { LOGIN } from "../../lib/graphql/auth";
 import { useAuth } from "../../context/AuthContext";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
-  const { login } = useAuth();
+  const { login,usuario } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
+const router = useRouter();
   const [doLogin, { loading, error }] = useMutation(LOGIN, {
     onCompleted: (data) => {
       login(data.login.access_token, data.login.usuario);
     },
   });
+
+
+   useEffect(() => {
+    if (usuario) {
+      router.push("/usuarios");
+    }
+  }, [usuario, router]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

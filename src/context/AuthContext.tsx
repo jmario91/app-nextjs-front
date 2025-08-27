@@ -1,6 +1,8 @@
 "use client";
 
 import { createContext, useContext, useState, ReactNode, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Cookies  from "js-cookie";
 
 type Usuario = {
   id: string;
@@ -18,6 +20,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [usuario, setUsuario] = useState<Usuario | null>(null);
+ const router = useRouter();
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -30,19 +33,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = (token: string, usuario: Usuario) => {
     localStorage.setItem("token", token);
     localStorage.setItem("usuario", JSON.stringify(usuario));
+    Cookies.set("token", token,{ expires: 1 }); 
     setUsuario(usuario);
   };
 
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("usuario");
+    Cookies.remove("token");
     setUsuario(null);
+    router.push("/");
   };
 
   return (
     <AuthContext.Provider value={{ usuario, login, logout }}>
       {children}
-    </AuthContext.Provider>
+      </AuthContext.Provider>
+    
   );
 }
 

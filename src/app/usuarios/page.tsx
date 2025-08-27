@@ -41,7 +41,7 @@ const [search, setSearch] = useState("");
 
   if (loading) return <p className="container mt-4">Cargando usuarios...</p>;
   if (error) return <p className="container mt-4 text-danger">Error: {error.message}</p>;
-
+console.log(filtro);
   return (
     <div className="container mt-4">
       <div className="card shadow-sm">
@@ -80,17 +80,14 @@ const [search, setSearch] = useState("");
                     <td className="text-center">
                       <Link
                         href={`/usuarios/${u.id}/editar`}
-                        className="btn btn-sm btn-outline-warning me-2"
-                      >
+                        className="btn btn-sm btn-outline-warning me-2">
                         ✏️ Editar
                       </Link>
                      <DeleteButton
-  id={u.id}
-  pagina={pagina}
-  limite={limite}
-  filtro={Object.keys(filtro).length > 0 ? filtro : undefined}
-/>
-
+                        id={u.id}
+                        pagina={pagina}
+                        limite={limite}
+                        filtro={Object.keys(filtro).length > 0 ? filtro : undefined}/>
                     </td>
                   </tr>
                 ))}

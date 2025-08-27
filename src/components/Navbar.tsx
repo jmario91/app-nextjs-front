@@ -2,12 +2,13 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { useAuth } from "../context/AuthContext";
 
 export default function Navbar() {
   const pathname = usePathname()
 
   const isActive = (route: string) => pathname === route
-
+  const { usuario, logout } = useAuth();
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
       <div className="container">
@@ -41,35 +42,49 @@ export default function Navbar() {
               </Link>
             </li>
 
-            <li className="nav-item">
-              <Link
-                className={`nav-link ${isActive("/usuarios") ? "active fw-semibold" : ""}`}
-                href="/usuarios"
-              >
-                <i className="bi bi-people-fill me-1"></i>Usuarios
-              </Link>
-            </li>
-
-            <li className="nav-item">
-              <Link
-                className={`nav-link ${isActive("/galeria") ? "active fw-semibold" : ""}`}
-                href="/galeria"
-              >
-                <i className="bi bi-images me-1"></i>Galería
-              </Link>
-            </li>
-            <li className="nav-item">
-  <Link
-    className={`nav-link ${isActive("/mapa") ? "active fw-semibold" : ""}`}
-    href="/mapa"
-  >
-    <i className="bi bi-geo-alt-fill me-1"></i>Mapa
-  </Link>
-</li>
-
+            {usuario && (
+              <>
+                <li className="nav-item">
+                  <Link
+                    className={`nav-link ${isActive("/usuarios") ? "active fw-semibold" : ""}`}
+                    href="/usuarios"
+                  >
+                    <i className="bi bi-people-fill me-1"></i>Usuarios
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <Link
+                    className={`nav-link ${isActive("/galeria") ? "active fw-semibold" : ""}`}
+                    href="/galeria"
+                  >
+                    <i className="bi bi-images me-1"></i>Galería
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <Link
+                    className={`nav-link ${isActive("/mapa") ? "active fw-semibold" : ""}`}
+                    href="/mapa"
+                  >
+                    <i className="bi bi-geo-alt-fill me-1"></i>Mapa
+                  </Link>
+                </li>
+              </>
+            )}
           </ul>
+
+          <div className="ms-lg-3">
+            {usuario ? (
+              <button className="btn btn-outline-danger btn-sm" onClick={logout}>
+                Cerrar sesión
+              </button>
+            ) : (
+              <Link href="/login" className="btn btn-outline-primary btn-sm">
+                Iniciar sesión
+              </Link>
+            )}
+          </div>
         </div>
       </div>
     </nav>
-  )
+  );
 }
